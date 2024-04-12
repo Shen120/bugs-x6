@@ -1,4 +1,24 @@
-import {Graph, Node} from "@antv/x6";
+import {Cell, Graph, Node, Edge} from "@antv/x6";
+
+interface NodeEventCommonArgs {
+  node: Node;
+}
+interface EdgeEventCommonArgs {
+  edge: Edge;
+}
+
+export type ShapeType = "circle" | 'rect';
+export type Position = "up" | "left" | "down" | "right";
+
+export interface RectPoint {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  shapeType: ShapeType;
+}
+
+export type PointOffset = Omit<RectPoint, "width" | "height" | "shapeType">;
 
 export interface IItem {
   dataType: DataType;
@@ -42,9 +62,50 @@ export interface IItemParams {
   node: Node,
   graph: Graph,
   parentID: string,
-  index?: number,
+  index: number,
+  titleHeight?: number,
 }
 
 export interface GraphCtx {
-  graph?: Graph
+  graph?: Graph;
+  expandOption: {
+    expand: {[key: string]: any[]},
+    onChange?: (nodeId: string, expandValue: any[]) => void,
+  }
+}
+
+export type NodeAddEvent = NodeEventCommonArgs & {
+  cell: Cell<Cell.Properties>
+  index: number
+  options: Cell.SetOptions
+};
+
+export type NodeRemoveEvent = NodeEventCommonArgs & {
+  cell: Cell<Cell.Properties>;
+  index: number;
+  options: Cell.RemoveOptions
+}
+export type NodeChangeEvent = NodeEventCommonArgs & { cell: Cell<Cell.Properties>; options: Cell.MutateOptions }
+
+export type EdgeAddEvent = EdgeEventCommonArgs & {
+  cell: Cell<Cell.Properties>;
+  index: number;
+  options: Cell.SetOptions
+}
+export type EdgeRemoveEvent = EdgeEventCommonArgs & {
+  cell: Cell<Cell.Properties>;
+  index: number;
+  options: Cell.RemoveOptions
+}
+export type EdgeChangeEvent = EdgeEventCommonArgs & { cell: Cell<Cell.Properties>; options: Cell.MutateOptions }
+
+export interface X6ReactProps {
+  onNodeAdded?: (e: NodeAddEvent) => void;
+  onNodeRemoved?: (e: NodeRemoveEvent) => void;
+  onNodeChanged?: (e: NodeChangeEvent) => void;
+
+  onEdgeAdded?: (e: EdgeAddEvent) => void;
+  onEdgeRemoved?: (e: EdgeRemoveEvent) => void;
+  onEdgeChanged?: (e: EdgeChangeEvent) => void;
+  onRenderDone?: () => void;
 }
